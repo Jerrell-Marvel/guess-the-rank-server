@@ -31,6 +31,7 @@ app.use(cookieParser());
 import passport from "passport";
 import googleStrat from "passport-google-oauth20";
 import { User } from "./models/User";
+import { Category } from "./models/Category";
 const GoogleStrategy = googleStrat.Strategy;
 
 passport.use(
@@ -70,11 +71,13 @@ app.get("/auth/google/callback", passport.authenticate("google", { session: fals
 });
 
 app.get("/test", async (req, res) => {
-  const user = await User.findOne({
-    email: "ksdjfklsdjkfl",
-  });
+  const result = await Category.insertMany([
+    { name: "Valorant", description: "Lorem ipsum only" },
+    { name: "Overwatch", description: "Lorem ipsum only" },
+    { name: "CSGO", description: "Lorem ipsum only" },
+  ]);
 
-  res.json({ user });
+  res.json({ result });
 });
 
 const PORT = 5000;

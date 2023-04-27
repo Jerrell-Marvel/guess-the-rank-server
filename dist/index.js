@@ -37,6 +37,7 @@ app.use((0, cookie_parser_1.default)());
 const passport_1 = __importDefault(require("passport"));
 const passport_google_oauth20_1 = __importDefault(require("passport-google-oauth20"));
 const User_1 = require("./models/User");
+const Category_1 = require("./models/Category");
 const GoogleStrategy = passport_google_oauth20_1.default.Strategy;
 passport_1.default.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -65,10 +66,12 @@ app.get("/auth/google/callback", passport_1.default.authenticate("google", { ses
     res.cookie("token", (_a = req.userInfo) === null || _a === void 0 ? void 0 : _a.token, { sameSite: "none", secure: true, httpOnly: true }).json({ ok: true });
 });
 app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User_1.User.findOne({
-        email: "ksdjfklsdjkfl",
-    });
-    res.json({ user });
+    const result = yield Category_1.Category.insertMany([
+        { name: "Valorant", description: "Lorem ipsum only" },
+        { name: "Overwatch", description: "Lorem ipsum only" },
+        { name: "CSGO", description: "Lorem ipsum only" },
+    ]);
+    res.json({ result });
 }));
 const PORT = 5000;
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
