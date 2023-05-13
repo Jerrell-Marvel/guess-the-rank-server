@@ -27,6 +27,9 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./db/connectDB";
 app.use(cookieParser());
 
+//parse json
+app.use(express.json());
+
 //Passport
 import passport from "passport";
 import googleStrat from "passport-google-oauth20";
@@ -54,7 +57,7 @@ passport.use(
         });
       }
 
-      const token = jwt.sign({ userId: profile.id }, process.env.JWT_SECRET!, {
+      const token = jwt.sign({ userId: profile.id, username: profile.displayName }, process.env.JWT_SECRET!, {
         expiresIn: process.env.JWT_LIFETIME!,
       });
 
@@ -65,25 +68,47 @@ passport.use(
 
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
 
-app.get("/auth/google/callback", passport.authenticate("google", { session: false }), (req, res) => {
-  console.log(req.user);
-  res.cookie("token", req.userInfo?.token, { sameSite: "none", secure: true, httpOnly: true }).json({ ok: true });
+// type GoogleCBRequest = Request & {user:{
+//   token:string;
+// }}
+
+app.get("/auth/google/callback", passport.authenticate("google", { session: false }), (req: Request, res: Response) => {
+  //Token passed by passport
+  const { token } = req.user as { token: string };
+
+  res.cookie("token", token, { sameSite: "none", secure: true, httpOnly: true }).json({ ok: true });
 });
+
+//Routes import
+import { router as categoryRoutes } from "./routes/category";
+import { router as clipRoutes } from "./routes/clip";
+import { router as guessRoutes } from "./routes/guess";
+import mongoose from "mongoose";
+import { errorHandler } from "./middleware/errorHandler";
+app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/clip", clipRoutes);
+app.use("/api/v1/guess", guessRoutes);
 
 app.get("/test", async (req, res) => {
-  const result = await Category.insertMany([
-    { name: "Valorant", description: "Lorem ipsum only" },
-    { name: "Overwatch", description: "Lorem ipsum only" },
-    { name: "CSGO", description: "Lorem ipsum only" },
-  ]);
+  // const result = await Category.create({ name: "Valorant", description: "Lorem ipsum only" });
 
-  res.json({ result });
+  // res.json({ result });
+
+  const categoryRes = await Category.findOne({}).populate({
+    path: "ranks",
+  });
+
+  return res.json({ categoryRes });
 });
 
+//Error handler
+app.use(errorHandler);
+
 const PORT = 5000;
+
 app.listen(PORT, async () => {
   try {
-    await connectDB(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI!, {});
     console.log("MongoDB connected");
     console.log(`Server is running on port ${PORT}`);
   } catch (err) {

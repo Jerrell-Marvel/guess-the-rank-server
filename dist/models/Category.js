@@ -9,6 +9,7 @@ const CategorySchema = new mongoose_1.default.Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     imgBanner: {
         type: String,
@@ -16,5 +17,11 @@ const CategorySchema = new mongoose_1.default.Schema({
     description: {
         type: String,
     },
+    ranks: [
+        {
+            type: mongoose_1.default.Types.ObjectId,
+            ref: "Rank",
+        },
+    ],
 });
 exports.Category = mongoose_1.default.model("Category", CategorySchema);

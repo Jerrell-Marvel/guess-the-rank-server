@@ -31,8 +31,9 @@ app.use((0, cors_1.default)({
 require("express-async-errors");
 //Cookie parser
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const connectDB_1 = require("./db/connectDB");
 app.use((0, cookie_parser_1.default)());
+//parse json
+app.use(express_1.default.json());
 //Passport
 const passport_1 = __importDefault(require("passport"));
 const passport_google_oauth20_1 = __importDefault(require("passport-google-oauth20"));
@@ -54,29 +55,43 @@ passport_1.default.use(new GoogleStrategy({
             username: profile.displayName,
         });
     }
-    const token = jsonwebtoken_1.default.sign({ userId: profile.id }, process.env.JWT_SECRET, {
+    const token = jsonwebtoken_1.default.sign({ userId: profile.id, username: profile.displayName }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_LIFETIME,
     });
     done(null, { token });
 })));
 app.get("/auth/google", passport_1.default.authenticate("google", { scope: ["profile", "email"], session: false }));
+// type GoogleCBRequest = Request & {user:{
+//   token:string;
+// }}
 app.get("/auth/google/callback", passport_1.default.authenticate("google", { session: false }), (req, res) => {
-    var _a;
-    console.log(req.user);
-    res.cookie("token", (_a = req.userInfo) === null || _a === void 0 ? void 0 : _a.token, { sameSite: "none", secure: true, httpOnly: true }).json({ ok: true });
+    //Token passed by passport
+    const { token } = req.user;
+    res.cookie("token", token, { sameSite: "none", secure: true, httpOnly: true }).json({ ok: true });
 });
+//Routes import
+const category_1 = require("./routes/category");
+const clip_1 = require("./routes/clip");
+const guess_1 = require("./routes/guess");
+const mongoose_1 = __importDefault(require("mongoose"));
+const errorHandler_1 = require("./middleware/errorHandler");
+app.use("/api/v1/category", category_1.router);
+app.use("/api/v1/clip", clip_1.router);
+app.use("/api/v1/guess", guess_1.router);
 app.get("/test", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Category_1.Category.insertMany([
-        { name: "Valorant", description: "Lorem ipsum only" },
-        { name: "Overwatch", description: "Lorem ipsum only" },
-        { name: "CSGO", description: "Lorem ipsum only" },
-    ]);
-    res.json({ result });
+    // const result = await Category.create({ name: "Valorant", description: "Lorem ipsum only" });
+    // res.json({ result });
+    const categoryRes = yield Category_1.Category.findOne({}).populate({
+        path: "ranks",
+    });
+    return res.json({ categoryRes });
 }));
+//Error handler
+app.use(errorHandler_1.errorHandler);
 const PORT = 5000;
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, connectDB_1.connectDB)(process.env.MONGO_URI);
+        yield mongoose_1.default.connect(process.env.MONGO_URI, {});
         console.log("MongoDB connected");
         console.log(`Server is running on port ${PORT}`);
     }

@@ -4,6 +4,7 @@ const CategorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
 
   imgBanner: {
@@ -13,6 +14,13 @@ const CategorySchema = new mongoose.Schema({
   description: {
     type: String,
   },
+
+  ranks: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Rank",
+    },
+  ],
 });
 
 export const Category = mongoose.model("Category", CategorySchema);
