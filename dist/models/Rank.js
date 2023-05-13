@@ -10,15 +10,6 @@ const RankSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    // email: {
-    //   type: String,
-    //   required: [true, "Please provide email"],
-    //   unique: true,
-    // },
-    // password: {
-    //   type: String,
-    //   required: true,
-    // },
 });
 // UserSchema.pre("save", async function (next) {
 //   const salt = await bcrypt.genSalt(10);
