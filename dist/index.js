@@ -91,11 +91,13 @@ app.use(errorHandler_1.errorHandler);
 const PORT = 5000;
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("Connecting to MongoDB");
         yield mongoose_1.default.connect(process.env.MONGO_URI, {});
         console.log("MongoDB connected");
         console.log(`Server is running on port ${PORT}`);
     }
     catch (err) {
-        console.log("LOL ERROR");
+        console.log(err);
+        console.log("Cannot connect to MongoDB");
     }
 }));

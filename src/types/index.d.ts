@@ -7,6 +7,7 @@ declare global {
         userId?: string;
         token?: string;
         username?: string;
+        role?: string;
       };
     }
   }

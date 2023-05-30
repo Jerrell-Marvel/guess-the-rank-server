@@ -7,6 +7,7 @@ type User = {
   username: string;
   email: string;
   password: string;
+  role: "admin" | "user";
 };
 
 // type UserMethods = {
@@ -23,6 +24,11 @@ const UserSchema = new mongoose.Schema<User>({
   username: {
     type: String,
     required: true,
+  },
+
+  role: {
+    type: String,
+    default: "user",
   },
 
   // email: {
