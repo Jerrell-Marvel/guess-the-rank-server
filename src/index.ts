@@ -50,16 +50,21 @@ passport.use(
         id: profile.id,
       });
 
+      let token;
+
       if (!user) {
         await User.create({
           id: profile.id,
           username: profile.displayName,
         });
+        token = jwt.sign({ userId: profile.id, username: profile.displayName, role: "user" }, process.env.JWT_SECRET!, {
+          expiresIn: process.env.JWT_LIFETIME!,
+        });
+      } else {
+        token = jwt.sign({ userId: user._id, username: profile.displayName, role: user.role }, process.env.JWT_SECRET!, {
+          expiresIn: process.env.JWT_LIFETIME!,
+        });
       }
-
-      const token = jwt.sign({ userId: profile.id, username: profile.displayName }, process.env.JWT_SECRET!, {
-        expiresIn: process.env.JWT_LIFETIME!,
-      });
 
       done(null, { token });
     }
