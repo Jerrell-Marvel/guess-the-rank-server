@@ -29,3 +29,12 @@ export const deleteClip = async (req: Request, res: Response) => {
   const deletedClip = await Clip.findOneAndDelete({ _id: clipId });
   return res.json(deletedClip);
 };
+
+export const getClips = async (req: Request, res: Response) => {
+  const { categoryId } = req.params;
+  const { status = "pending" } = req.query;
+
+  const clips = await Clip.find({ category: categoryId, status });
+
+  return res.json(clips);
+};

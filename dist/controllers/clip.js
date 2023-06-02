@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
+exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
 const Clip_1 = require("../models/Clip");
 const createClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "pending" }));
@@ -37,3 +37,10 @@ const deleteClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     return res.json(deletedClip);
 });
 exports.deleteClip = deleteClip;
+const getClips = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { categoryId } = req.params;
+    const { status = "pending" } = req.query;
+    const clips = yield Clip_1.Clip.find({ category: categoryId, status });
+    return res.json(clips);
+});
+exports.getClips = getClips;

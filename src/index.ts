@@ -94,7 +94,7 @@ import { errorHandler } from "./middleware/errorHandler";
 
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/rank", rankRoutes);
-app.use("/api/v1/clip", clipRoutes);
+app.use("/api/v1", clipRoutes);
 app.use("/api/v1/guess", guessRoutes);
 
 app.get("/test", async (req, res) => {
