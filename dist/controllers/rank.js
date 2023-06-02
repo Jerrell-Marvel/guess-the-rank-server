@@ -9,12 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCategory = void 0;
+exports.createRank = void 0;
+const Rank_1 = require("../models/Rank");
 const Category_1 = require("../models/Category");
-const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const ranks = await Rank.create(...req.body.ranks);
-    // const rankIds = ranks.map((rank) => rank._id);
-    const category = yield Category_1.Category.create(Object.assign({}, req.body));
+const BadRequestError_1 = require("../errors/BadRequestError");
+const createRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { categoryId } = req.params;
+    const rank = yield Rank_1.Rank.create(Object.assign({}, req.body));
+    const category = yield Category_1.Category.findOneAndUpdate({ _id: categoryId }, {
+        $push: {
+            ranks: rank._id,
+        },
+    }, { new: true });
+    if (!category) {
+        throw new BadRequestError_1.BadRequestError("Invalid category id");
+    }
     return res.json({ category });
 });
-exports.createCategory = createCategory;
+exports.createRank = createRank;

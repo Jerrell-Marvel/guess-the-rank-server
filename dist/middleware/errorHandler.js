@@ -10,7 +10,7 @@ const errorHandler = (err, req, res, next) => {
         statusCode: err.statusCode || http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR,
         message: err.message || "Something went wrong try again later",
     };
-    if (err.code === 11000 || err.name === "ValidationError") {
+    if (err.code === 11000 || err.name === "ValidationError" || err.name === "CastError") {
         customError.statusCode = http_status_codes_1.StatusCodes.BAD_REQUEST;
     }
     // return res.json(err);

@@ -88,9 +88,12 @@ app.get("/auth/google/callback", passport.authenticate("google", { session: fals
 import { router as categoryRoutes } from "./routes/category";
 import { router as clipRoutes } from "./routes/clip";
 import { router as guessRoutes } from "./routes/guess";
+import { router as rankRoutes } from "./routes/rank";
 import mongoose from "mongoose";
 import { errorHandler } from "./middleware/errorHandler";
+
 app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1/rank", rankRoutes);
 app.use("/api/v1/clip", clipRoutes);
 app.use("/api/v1/guess", guessRoutes);
 
