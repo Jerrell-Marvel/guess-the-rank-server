@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getClip = exports.createClip = void 0;
+exports.verifyClip = exports.getClip = exports.createClip = void 0;
 const Clip_1 = require("../models/Clip");
 const createClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "verified" }));
+    const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "pending" }));
     return res.json({ clip });
     //   return res.json("sucess");
 });
@@ -25,3 +25,9 @@ const getClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json({ clip });
 });
 exports.getClip = getClip;
+const verifyClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { clipId } = req.params;
+    const verifiedClip = yield Clip_1.Clip.findOneAndUpdate({ _id: clipId }, { status: "verified" }, { new: true });
+    return res.json(verifiedClip);
+});
+exports.verifyClip = verifyClip;

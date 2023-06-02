@@ -13,7 +13,7 @@ const adminAuth = (req, res, next) => {
     }
     try {
         const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        console.log(payload);
+        // console.log(payload);
         if (payload.role !== "admin") {
             throw new UnauthorizedError_1.UnauthorizedError("Invalid token");
         }
