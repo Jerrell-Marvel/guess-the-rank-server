@@ -11,3 +11,9 @@ export const createCategory = async (req: Request, res: Response) => {
 
   return res.json({ category });
 };
+
+export const getCategories = async (req: Request, res: Response) => {
+  const categories = await Category.find({});
+
+  return res.json(categories);
+};

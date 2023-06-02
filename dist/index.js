@@ -82,7 +82,7 @@ const guess_1 = require("./routes/guess");
 const rank_1 = require("./routes/rank");
 const mongoose_1 = __importDefault(require("mongoose"));
 const errorHandler_1 = require("./middleware/errorHandler");
-app.use("/api/v1/category", category_1.router);
+app.use("/api/v1", category_1.router);
 app.use("/api/v1/rank", rank_1.router);
 app.use("/api/v1", clip_1.router);
 app.use("/api/v1/guess", guess_1.router);

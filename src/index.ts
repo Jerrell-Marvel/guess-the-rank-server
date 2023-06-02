@@ -92,7 +92,7 @@ import { router as rankRoutes } from "./routes/rank";
 import mongoose from "mongoose";
 import { errorHandler } from "./middleware/errorHandler";
 
-app.use("/api/v1/category", categoryRoutes);
+app.use("/api/v1", categoryRoutes);
 app.use("/api/v1/rank", rankRoutes);
 app.use("/api/v1", clipRoutes);
 app.use("/api/v1/guess", guessRoutes);
