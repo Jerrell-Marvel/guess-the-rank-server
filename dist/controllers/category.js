@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCategories = exports.createCategory = void 0;
+exports.getCategory = exports.getCategories = exports.createCategory = void 0;
 const Category_1 = require("../models/Category");
 const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const ranks = await Rank.create(...req.body.ranks);
@@ -23,3 +23,9 @@ const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     return res.json(categories);
 });
 exports.getCategories = getCategories;
+const getCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name } = req.params;
+    const category = yield Category_1.Category.findOne({ name });
+    return res.json(category);
+});
+exports.getCategory = getCategory;

@@ -17,3 +17,11 @@ export const getCategories = async (req: Request, res: Response) => {
 
   return res.json(categories);
 };
+
+export const getCategory = async (req: Request, res: Response) => {
+  const { name } = req.params;
+
+  const category = await Category.findOne({ name });
+
+  return res.json(category);
+};

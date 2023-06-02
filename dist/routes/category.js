@@ -10,3 +10,4 @@ const adminAuth_1 = require("../middleware/adminAuth");
 exports.router = express_1.default.Router();
 exports.router.route("/category").post(adminAuth_1.adminAuth, category_1.createCategory);
 exports.router.route("/categories").get(category_1.getCategories);
+exports.router.route("/category/:name").get(category_1.getCategory);
