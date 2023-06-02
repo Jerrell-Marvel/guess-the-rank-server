@@ -23,3 +23,9 @@ export const verifyClip = async (req: Request, res: Response) => {
   const verifiedClip = await Clip.findOneAndUpdate({ _id: clipId }, { status: "verified" }, { new: true });
   return res.json(verifiedClip);
 };
+
+export const deleteClip = async (req: Request, res: Response) => {
+  const { clipId } = req.params;
+  const deletedClip = await Clip.findOneAndDelete({ _id: clipId });
+  return res.json(deletedClip);
+};
