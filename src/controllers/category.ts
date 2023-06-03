@@ -21,7 +21,7 @@ export const getCategories = async (req: Request, res: Response) => {
 export const getCategory = async (req: Request, res: Response) => {
   const { name } = req.params;
 
-  const category = await Category.findOne({ name });
+  const category = await Category.findOne({ name }).populate("ranks");
 
   return res.json(category);
 };

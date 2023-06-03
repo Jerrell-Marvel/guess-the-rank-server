@@ -13,9 +13,9 @@ export const getClip = async (req: Request, res: Response) => {
 
   const randomNum = Math.floor(Math.random() * documentCount);
 
-  const clip = await Clip.findOne({ status: "verified", category: categoryId }).skip(randomNum);
+  const clip = await Clip.findOne({ status: "verified", category: categoryId }, { actualRank: 0 }).skip(randomNum);
 
-  return res.json({ clip });
+  return res.json(clip);
 };
 
 export const verifyClip = async (req: Request, res: Response) => {

@@ -21,8 +21,8 @@ const getClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { categoryId } = req.params;
     const documentCount = yield Clip_1.Clip.countDocuments({ status: "verified", category: categoryId });
     const randomNum = Math.floor(Math.random() * documentCount);
-    const clip = yield Clip_1.Clip.findOne({ status: "verified", category: categoryId }).skip(randomNum);
-    return res.json({ clip });
+    const clip = yield Clip_1.Clip.findOne({ status: "verified", category: categoryId }, { actualRank: 0 }).skip(randomNum);
+    return res.json(clip);
 });
 exports.getClip = getClip;
 const verifyClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

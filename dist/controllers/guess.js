@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.submitGuess = void 0;
 const Guess_1 = require("../models/Guess");
 const Clip_1 = require("../models/Clip");
 const BadRequestError_1 = require("../errors/BadRequestError");
+const mongoose_1 = __importDefault(require("mongoose"));
 const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { clipId } = req.params;
     const { rankGuess } = req.body;
@@ -32,7 +36,46 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         isCorrect = true;
     }
     const submittedGuess = yield Guess_1.Guess.create({ clip: clipId, rankGuess: rankGuess });
-    const count = yield Guess_1.Guess.aggregate([{ $group: { _id: "$rankGuess", count: { $sum: 1 } } }]);
-    return res.json({ count, isCorrect });
+    console.log(clipId);
+    // const test = await Guess.aggregate([
+    //   {
+    //     $match: {
+    //       clip: new mongoose.Types.ObjectId(clipId),
+    //     },
+    //   },
+    // ]);
+    // console.log(test);
+    const documentCounts = yield Guess_1.Guess.aggregate([
+        {
+            $match: {
+                clip: new mongoose_1.default.Types.ObjectId(clipId),
+            },
+        },
+        { $group: { _id: "$rankGuess", count: { $sum: 1 } } },
+        {
+            $lookup: {
+                from: "ranks",
+                localField: "_id",
+                foreignField: "_id",
+                as: "rank",
+            },
+        },
+        {
+            $unwind: {
+                path: "$rank",
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+            },
+        },
+    ]);
+    const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
+    const result = documentCounts.map((doc) => {
+        const percentage = (doc.count / totalDocuments) * 100;
+        return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
+    });
+    return res.json({ result, isCorrect, totalDocuments });
 });
 exports.submitGuess = submitGuess;
