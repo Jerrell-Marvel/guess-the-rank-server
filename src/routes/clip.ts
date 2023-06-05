@@ -7,7 +7,7 @@ export const router = express.Router();
 
 router.route("/clip").post(authentication, createClip);
 router.route("/clip/:clipId").delete(adminAuth, deleteClip);
-router.route("/clip/details/:clipId").get(getClipDetail);
+router.route("/clip/details/:clipId").get(authentication, getClipDetail);
 router.route("/clip/:categoryId").get(getClip);
 router.route("/clip/verify/:clipId").post(adminAuth, verifyClip);
 

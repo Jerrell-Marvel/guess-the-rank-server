@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { Clip } from "../models/Clip";
 import { userInfo } from "os";
 import { BadRequestError } from "../errors/BadRequestError";
+import { Guess } from "../models/Guess";
+import mongoose from "mongoose";
 export const createClip = async (req: Request<{}, {}>, res: Response) => {
   // console.log(req.userInfo);
   const { userId } = req.userInfo!;
@@ -54,10 +56,6 @@ export const getClipDetail = async (req: Request, res: Response) => {
   const { userId, role } = req.userInfo!;
   const { clipId } = req.params;
 
-  type b = {
-    lol: string;
-  };
-
   const queryObject: { _id: string; createdBy?: string } = { _id: clipId };
 
   if (role === "user") {
@@ -70,5 +68,41 @@ export const getClipDetail = async (req: Request, res: Response) => {
     throw new BadRequestError("Clip not found");
   }
 
-  return res.json(clip);
+  const documentCounts = await Guess.aggregate([
+    {
+      $match: {
+        clip: new mongoose.Types.ObjectId(clipId),
+      },
+    },
+    { $group: { _id: "$rankGuess", count: { $sum: 1 } } },
+    {
+      $lookup: {
+        from: "ranks",
+        localField: "_id",
+        foreignField: "_id",
+        as: "rank",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$rank",
+      },
+    },
+
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+  ]);
+
+  const totalDocuments = await Guess.countDocuments({ clip: clipId });
+
+  const result = documentCounts.map((doc) => {
+    const percentage = (doc.count / totalDocuments) * 100;
+    return { ...doc, percentage: percentage.toFixed(2) };
+  });
+
+  return res.json({ clip, result });
 };

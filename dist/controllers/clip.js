@@ -8,10 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getClipDetail = exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
 const Clip_1 = require("../models/Clip");
 const BadRequestError_1 = require("../errors/BadRequestError");
+const Guess_1 = require("../models/Guess");
+const mongoose_1 = __importDefault(require("mongoose"));
 const createClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // console.log(req.userInfo);
     const { userId } = req.userInfo;
@@ -63,6 +68,37 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (!clip) {
         throw new BadRequestError_1.BadRequestError("Clip not found");
     }
-    return res.json(clip);
+    const documentCounts = yield Guess_1.Guess.aggregate([
+        {
+            $match: {
+                clip: new mongoose_1.default.Types.ObjectId(clipId),
+            },
+        },
+        { $group: { _id: "$rankGuess", count: { $sum: 1 } } },
+        {
+            $lookup: {
+                from: "ranks",
+                localField: "_id",
+                foreignField: "_id",
+                as: "rank",
+            },
+        },
+        {
+            $unwind: {
+                path: "$rank",
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+            },
+        },
+    ]);
+    const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
+    const result = documentCounts.map((doc) => {
+        const percentage = (doc.count / totalDocuments) * 100;
+        return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
+    });
+    return res.json({ clip, result });
 });
 exports.getClipDetail = getClipDetail;
