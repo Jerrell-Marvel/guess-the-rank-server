@@ -51,13 +51,18 @@ passport.use(
       });
 
       let token;
+      console.log(user);
 
       if (!user) {
-        await User.create({
+        console.log({
           id: profile.id,
           username: profile.displayName,
         });
-        token = jwt.sign({ userId: profile.id, username: profile.displayName, role: "user" }, process.env.JWT_SECRET!, {
+        const user = await User.create({
+          id: profile.id,
+          username: profile.displayName,
+        });
+        token = jwt.sign({ userId: user._id, username: profile.displayName, role: "user" }, process.env.JWT_SECRET!, {
           expiresIn: process.env.JWT_LIFETIME!,
         });
       } else {
@@ -67,6 +72,7 @@ passport.use(
       }
 
       done(null, { token });
+      // done(null, { token: "dlksjlkfjsldkj" });
     }
   )
 );

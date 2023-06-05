@@ -9,10 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
+exports.getClipDetail = exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
 const Clip_1 = require("../models/Clip");
+const BadRequestError_1 = require("../errors/BadRequestError");
 const createClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "pending" }));
+    // console.log(req.userInfo);
+    const { userId } = req.userInfo;
+    const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "pending", createdBy: userId }));
     return res.json({ clip });
     //   return res.json("sucess");
 });
@@ -39,8 +42,27 @@ const deleteClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.deleteClip = deleteClip;
 const getClips = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { categoryId } = req.params;
-    const { status = "pending" } = req.query;
-    const clips = yield Clip_1.Clip.find({ category: categoryId, status });
+    const { status = "verified" } = req.query;
+    const { userId, role } = req.userInfo;
+    const queryObject = { category: categoryId, status: status };
+    if (role === "user") {
+        queryObject.createdBy = userId;
+    }
+    const clips = yield Clip_1.Clip.find(queryObject);
     return res.json(clips);
 });
 exports.getClips = getClips;
+const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, role } = req.userInfo;
+    const { clipId } = req.params;
+    const queryObject = { _id: clipId };
+    if (role === "user") {
+        queryObject.createdBy = userId;
+    }
+    const clip = yield Clip_1.Clip.findOne(queryObject);
+    if (!clip) {
+        throw new BadRequestError_1.BadRequestError("Clip not found");
+    }
+    return res.json(clip);
+});
+exports.getClipDetail = getClipDetail;

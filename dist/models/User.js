@@ -5,6 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+// type User = {
+//   id: string;
+//   username: string;
+//   email: string;
+//   password: string;
+//   role: "admin" | "user";
+// };
 // type UserMethods = {
 //   matchPassword: (userPassword: string) => Promise<boolean>;
 //   createJWT: () => string;
@@ -22,16 +29,8 @@ const UserSchema = new mongoose_1.default.Schema({
     role: {
         type: String,
         default: "user",
+        enum: ["admin", "user"],
     },
-    // email: {
-    //   type: String,
-    //   required: [true, "Please provide email"],
-    //   unique: true,
-    // },
-    // password: {
-    //   type: String,
-    //   required: true,
-    // },
 });
 // UserSchema.pre("save", async function (next) {
 //   const salt = await bcrypt.genSalt(10);

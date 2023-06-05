@@ -9,12 +9,13 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     throw new UnauthorizedError("Token not provided");
   }
 
+  // console.log(token);
+
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { id: string; username: string };
-    req.userInfo = {
-      userId: payload.id,
-      username: payload.username,
-    };
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; username: string; role: "admin" | "user" };
+
+    console.log(payload);
+    req.userInfo = { ...payload };
     next();
   } catch (err) {
     throw new UnauthorizedError("Invalid token");

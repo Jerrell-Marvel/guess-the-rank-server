@@ -50,12 +50,17 @@ passport_1.default.use(new GoogleStrategy({
         id: profile.id,
     });
     let token;
+    console.log(user);
     if (!user) {
-        yield User_1.User.create({
+        console.log({
             id: profile.id,
             username: profile.displayName,
         });
-        token = jsonwebtoken_1.default.sign({ userId: profile.id, username: profile.displayName, role: "user" }, process.env.JWT_SECRET, {
+        const user = yield User_1.User.create({
+            id: profile.id,
+            username: profile.displayName,
+        });
+        token = jsonwebtoken_1.default.sign({ userId: user._id, username: profile.displayName, role: "user" }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_LIFETIME,
         });
     }
@@ -65,6 +70,7 @@ passport_1.default.use(new GoogleStrategy({
         });
     }
     done(null, { token });
+    // done(null, { token: "dlksjlkfjsldkj" });
 })));
 app.get("/auth/google", passport_1.default.authenticate("google", { scope: ["profile", "email"], session: false }));
 // type GoogleCBRequest = Request & {user:{

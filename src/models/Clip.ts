@@ -24,6 +24,12 @@ const ClipSchema = new mongoose.Schema({
     enum: ["pending", "verified"],
     default: "pending",
   },
+
+  createdBy: {
+    type: mongoose.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 ClipSchema.pre("save", async function (next) {

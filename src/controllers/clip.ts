@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { Clip } from "../models/Clip";
+import { userInfo } from "os";
+import { BadRequestError } from "../errors/BadRequestError";
 export const createClip = async (req: Request<{}, {}>, res: Response) => {
-  const clip = await Clip.create({ ...req.body, status: "pending" });
+  // console.log(req.userInfo);
+  const { userId } = req.userInfo!;
+  const clip = await Clip.create({ ...req.body, status: "pending", createdBy: userId });
   return res.json({ clip });
 
   //   return res.json("sucess");
@@ -32,9 +36,39 @@ export const deleteClip = async (req: Request, res: Response) => {
 
 export const getClips = async (req: Request, res: Response) => {
   const { categoryId } = req.params;
-  const { status = "pending" } = req.query;
+  const { status = "verified" } = req.query;
+  const { userId, role } = req.userInfo!;
 
-  const clips = await Clip.find({ category: categoryId, status });
+  const queryObject: { category: string; status: string; createdBy?: string } = { category: categoryId, status: status as string };
+
+  if (role === "user") {
+    queryObject.createdBy = userId;
+  }
+
+  const clips = await Clip.find(queryObject);
 
   return res.json(clips);
+};
+
+export const getClipDetail = async (req: Request, res: Response) => {
+  const { userId, role } = req.userInfo!;
+  const { clipId } = req.params;
+
+  type b = {
+    lol: string;
+  };
+
+  const queryObject: { _id: string; createdBy?: string } = { _id: clipId };
+
+  if (role === "user") {
+    queryObject.createdBy = userId;
+  }
+
+  const clip = await Clip.findOne(queryObject);
+
+  if (!clip) {
+    throw new BadRequestError("Clip not found");
+  }
+
+  return res.json(clip);
 };

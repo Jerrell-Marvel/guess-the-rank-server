@@ -11,12 +11,11 @@ const authentication = (req, res, next) => {
     if (!token) {
         throw new UnauthorizedError_1.UnauthorizedError("Token not provided");
     }
+    // console.log(token);
     try {
         const payload = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.userInfo = {
-            userId: payload.id,
-            username: payload.username,
-        };
+        console.log(payload);
+        req.userInfo = Object.assign({}, payload);
         next();
     }
     catch (err) {

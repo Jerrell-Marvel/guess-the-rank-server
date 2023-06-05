@@ -9,7 +9,7 @@ export const adminAuth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const payload = JWT.verify(token, process.env.JWT_SECRET!) as { id: string; username: string; role: string };
+    const payload = JWT.verify(token, process.env.JWT_SECRET!) as { userId: string; username: string; role: "admin" | "user" };
     // console.log(payload);
 
     if (payload.role !== "admin") {

@@ -2,20 +2,20 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-type User = {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  role: "admin" | "user";
-};
+// type User = {
+//   id: string;
+//   username: string;
+//   email: string;
+//   password: string;
+//   role: "admin" | "user";
+// };
 
 // type UserMethods = {
 //   matchPassword: (userPassword: string) => Promise<boolean>;
 //   createJWT: () => string;
 // };
 
-const UserSchema = new mongoose.Schema<User>({
+const UserSchema = new mongoose.Schema({
   id: {
     type: String,
     required: true,
@@ -29,18 +29,8 @@ const UserSchema = new mongoose.Schema<User>({
   role: {
     type: String,
     default: "user",
+    enum: ["admin", "user"],
   },
-
-  // email: {
-  //   type: String,
-  //   required: [true, "Please provide email"],
-  //   unique: true,
-  // },
-
-  // password: {
-  //   type: String,
-  //   required: true,
-  // },
 });
 
 // UserSchema.pre("save", async function (next) {

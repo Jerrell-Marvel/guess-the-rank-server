@@ -36,6 +36,11 @@ const ClipSchema = new mongoose_1.default.Schema({
         enum: ["pending", "verified"],
         default: "pending",
     },
+    createdBy: {
+        type: mongoose_1.default.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
 });
 ClipSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
