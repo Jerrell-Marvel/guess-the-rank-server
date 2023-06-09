@@ -13,7 +13,7 @@ const storage = multer_1.default.diskStorage({
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-        cb(null, file.fieldname + "-" + uniqueSuffix);
+        cb(null, file.fieldname + "-" + uniqueSuffix + path_1.default.extname(file.originalname).toLowerCase());
     },
 });
 exports.upload = (0, multer_1.default)({
@@ -28,6 +28,6 @@ exports.upload = (0, multer_1.default)({
         if (mimetype && extname) {
             return cb(null, true);
         }
-        cb(new BadRequestError_1.BadRequestError("File upload only supports the following filetypes - " + filetypes));
+        cb(new BadRequestError_1.BadRequestError("File upload only supports the following filetypes - " + filetypes + extname));
     },
 });

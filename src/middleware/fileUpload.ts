@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
 
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
+    cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname).toLowerCase());
   },
 });
 
@@ -28,6 +28,6 @@ export const upload = multer({
     if (mimetype && extname) {
       return cb(null, true);
     }
-    cb(new BadRequestError("File upload only supports the following filetypes - " + filetypes));
+    cb(new BadRequestError("File upload only supports the following filetypes - " + filetypes + extname));
   },
 });

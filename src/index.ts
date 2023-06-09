@@ -22,6 +22,9 @@ app.use(
 //Express async errors
 import "express-async-errors";
 
+//Serve static assets
+app.use("/static", express.static(path.join(__dirname, "public")));
+
 //Cookie parser
 import cookieParser from "cookie-parser";
 import { connectDB } from "./db/connectDB";
