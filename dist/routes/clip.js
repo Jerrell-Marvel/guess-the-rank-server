@@ -15,3 +15,4 @@ exports.router.route("/clip/details/:clipId").get(authentication_1.authenticatio
 exports.router.route("/clip/:categoryId").get(clip_1.getClip);
 exports.router.route("/clip/verify/:clipId").post(adminAuth_1.adminAuth, clip_1.verifyClip);
 exports.router.route("/clips/:categoryId").get(authentication_1.authentication, clip_1.getClips);
+exports.router.route("/clips").get(authentication_1.authentication, clip_1.getClips2);

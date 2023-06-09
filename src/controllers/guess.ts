@@ -13,6 +13,7 @@ export const submitGuess = async (req: Request, res: Response) => {
       path: "ranks",
     },
   });
+
   //   return res.json(clip);
 
   if (!clip) {
@@ -27,7 +28,32 @@ export const submitGuess = async (req: Request, res: Response) => {
 
   const submittedGuess = await Guess.create({ clip: clipId, rankGuess: rankGuess });
 
-  console.log(clipId);
+  // const clip2 = await Clip.aggregate([
+  //   {
+  //     $match: {
+  //       _id: new mongoose.Types.ObjectId(clipId),
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "categories",
+  //       localField: "category",
+  //       foreignField: "_id",
+  //       as: "cats",
+  //     },
+  //   },
+
+  //   {
+  //     $lookup: {
+  //       from: "ranks",
+  //       localField: "cats.ranks",
+  //       foreignField: "_id",
+  //       as: "cats.rankks",
+  //     },
+  //   },
+  // ]);
+  // console.log(clip2);
+  // console.log(JSON.stringify(clip2));
 
   // const test = await Guess.aggregate([
   //   {
@@ -70,10 +96,17 @@ export const submitGuess = async (req: Request, res: Response) => {
 
   const totalDocuments = await Guess.countDocuments({ clip: clipId });
 
-  const result = documentCounts.map((doc) => {
+  const guesses = documentCounts.map((doc) => {
     const percentage = (doc.count / totalDocuments) * 100;
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
-  return res.json({ result, isCorrect, totalDocuments });
+  guesses.forEach((res) => {
+    //@ts-ignore
+    const idx = clip.category.ranks;
+  });
+
+  //@ts-ignore
+
+  return res.json({ guesses, isCorrect, totalDocuments });
 };

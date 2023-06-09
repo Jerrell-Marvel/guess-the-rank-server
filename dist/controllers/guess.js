@@ -36,7 +36,31 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         isCorrect = true;
     }
     const submittedGuess = yield Guess_1.Guess.create({ clip: clipId, rankGuess: rankGuess });
-    console.log(clipId);
+    // const clip2 = await Clip.aggregate([
+    //   {
+    //     $match: {
+    //       _id: new mongoose.Types.ObjectId(clipId),
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "categories",
+    //       localField: "category",
+    //       foreignField: "_id",
+    //       as: "cats",
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "ranks",
+    //       localField: "cats.ranks",
+    //       foreignField: "_id",
+    //       as: "cats.rankks",
+    //     },
+    //   },
+    // ]);
+    // console.log(clip2);
+    // console.log(JSON.stringify(clip2));
     // const test = await Guess.aggregate([
     //   {
     //     $match: {
@@ -72,10 +96,15 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         },
     ]);
     const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
-    const result = documentCounts.map((doc) => {
+    const guesses = documentCounts.map((doc) => {
         const percentage = (doc.count / totalDocuments) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
-    return res.json({ result, isCorrect, totalDocuments });
+    guesses.forEach((res) => {
+        //@ts-ignore
+        const idx = clip.category.ranks;
+    });
+    //@ts-ignore
+    return res.json({ guesses, isCorrect, totalDocuments });
 });
 exports.submitGuess = submitGuess;

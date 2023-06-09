@@ -52,6 +52,26 @@ export const getClips = async (req: Request, res: Response) => {
   return res.json(clips);
 };
 
+export const getClips2 = async (req: Request, res: Response) => {
+  // const { categoryId } = req.params;
+  const { status = "verified", categoryId } = req.query;
+  const { userId, role } = req.userInfo!;
+
+  const queryObject: { category?: string; status: string; createdBy?: string } = { status: status as string };
+
+  if (categoryId) {
+    queryObject.category = categoryId as string;
+  }
+
+  if (role === "user") {
+    queryObject.createdBy = userId;
+  }
+
+  const clips = await Clip.find(queryObject);
+
+  return res.json(clips);
+};
+
 export const getClipDetail = async (req: Request, res: Response) => {
   const { userId, role } = req.userInfo!;
   const { clipId } = req.params;
@@ -99,10 +119,10 @@ export const getClipDetail = async (req: Request, res: Response) => {
 
   const totalDocuments = await Guess.countDocuments({ clip: clipId });
 
-  const result = documentCounts.map((doc) => {
+  const guesses = documentCounts.map((doc) => {
     const percentage = (doc.count / totalDocuments) * 100;
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
-  return res.json({ clip, result });
+  return res.json({ clip, guesses });
 };

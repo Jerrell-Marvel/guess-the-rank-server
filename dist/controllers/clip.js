@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getClipDetail = exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
+exports.getClipDetail = exports.getClips2 = exports.getClips = exports.deleteClip = exports.verifyClip = exports.getClip = exports.createClip = void 0;
 const Clip_1 = require("../models/Clip");
 const BadRequestError_1 = require("../errors/BadRequestError");
 const Guess_1 = require("../models/Guess");
@@ -57,6 +57,21 @@ const getClips = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.json(clips);
 });
 exports.getClips = getClips;
+const getClips2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // const { categoryId } = req.params;
+    const { status = "verified", categoryId } = req.query;
+    const { userId, role } = req.userInfo;
+    const queryObject = { status: status };
+    if (categoryId) {
+        queryObject.category = categoryId;
+    }
+    if (role === "user") {
+        queryObject.createdBy = userId;
+    }
+    const clips = yield Clip_1.Clip.find(queryObject);
+    return res.json(clips);
+});
+exports.getClips2 = getClips2;
 const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, role } = req.userInfo;
     const { clipId } = req.params;
@@ -95,10 +110,10 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         },
     ]);
     const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
-    const result = documentCounts.map((doc) => {
+    const guesses = documentCounts.map((doc) => {
         const percentage = (doc.count / totalDocuments) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
-    return res.json({ clip, result });
+    return res.json({ clip, guesses });
 });
 exports.getClipDetail = getClipDetail;
