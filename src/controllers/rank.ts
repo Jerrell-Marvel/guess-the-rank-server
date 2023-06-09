@@ -3,10 +3,9 @@ import { Rank } from "../models/Rank";
 import { Category } from "../models/Category";
 import { BadRequestError } from "../errors/BadRequestError";
 export const createRank = async (req: Request, res: Response) => {
+  const { filename } = req.file!;
   const { categoryId } = req.params;
-
-  const rank = await Rank.create({ ...req.body });
-
+  const rank = await Rank.create({ ...req.body, imgUrl: filename });
   const category = await Category.findOneAndUpdate(
     { _id: categoryId },
     {
@@ -16,10 +15,8 @@ export const createRank = async (req: Request, res: Response) => {
     },
     { new: true }
   );
-
   if (!category) {
     throw new BadRequestError("Invalid category id");
   }
-
   return res.json({ category });
 };

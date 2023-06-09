@@ -10,6 +10,10 @@ const RankSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    imgUrl: {
+        type: String,
+        required: true,
+    },
 });
 // UserSchema.pre("save", async function (next) {
 //   const salt = await bcrypt.genSalt(10);
