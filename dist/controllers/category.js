@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCategory = exports.getCategories = exports.createCategory = void 0;
 const Category_1 = require("../models/Category");
 const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { filename } = req.file;
     // const ranks = await Rank.create(...req.body.ranks);
     // const rankIds = ranks.map((rank) => rank._id);
-    const category = yield Category_1.Category.create(Object.assign({}, req.body));
+    const category = yield Category_1.Category.create(Object.assign(Object.assign({}, req.body), { imgUrl: filename }));
     return res.json({ category });
 });
 exports.createCategory = createCategory;

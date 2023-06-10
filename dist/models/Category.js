@@ -11,8 +11,9 @@ const CategorySchema = new mongoose_1.default.Schema({
         required: true,
         unique: true,
     },
-    imgBanner: {
+    imgUrl: {
         type: String,
+        required: true,
     },
     description: {
         type: String,

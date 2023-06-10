@@ -7,8 +7,9 @@ const CategorySchema = new mongoose.Schema({
     unique: true,
   },
 
-  imgBanner: {
+  imgUrl: {
     type: String,
+    required: true,
   },
 
   description: {
