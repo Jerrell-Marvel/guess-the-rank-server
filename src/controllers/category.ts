@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { Category } from "../models/Category";
 import { Rank } from "../models/Rank";
+import { Category as CategoryType } from "../types/category";
 
-export const createCategory = async (req: Request, res: Response) => {
+export const createCategory = async (req: Request, res: Response<CategoryType>) => {
   const { filename } = req.file!;
   // const ranks = await Rank.create(...req.body.ranks);
 
@@ -10,10 +11,10 @@ export const createCategory = async (req: Request, res: Response) => {
 
   const category = await Category.create({ ...req.body, imgUrl: filename });
 
-  return res.json({ category });
+  return res.json(category);
 };
 
-export const getCategories = async (req: Request, res: Response) => {
+export const getCategories = async (req: Request, res: Response<CategoryType[]>) => {
   const { ranks } = req.query;
   const categoriesQuery = Category.find({});
 

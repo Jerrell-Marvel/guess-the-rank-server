@@ -1,15 +1,17 @@
 import mongoose from "mongoose";
 import { Clip } from "./Clip";
 import { BadRequestError } from "../errors/BadRequestError";
-const GuessSchema = new mongoose.Schema({
+import { GuessSchema } from "../types/guess";
+
+const GuessSchema = new mongoose.Schema<GuessSchema>({
   clip: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Clip",
     required: true,
   },
 
   rankGuess: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Rank",
     required: true,
   },
@@ -43,4 +45,4 @@ GuessSchema.pre("save", async function (next) {
   // console.log(JSON.stringify(clip));
 });
 
-export const Guess = mongoose.model("Guess", GuessSchema);
+export const Guess = mongoose.model<GuessSchema>("Guess", GuessSchema);

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const RankSchema = new mongoose.Schema({
+const RankSchema = new mongoose.Schema<RankSchema>({
   name: {
     type: String,
     required: true,
@@ -29,4 +29,4 @@ const RankSchema = new mongoose.Schema({
 //   });
 // };
 
-export const Rank = mongoose.model("Rank", RankSchema);
+export const Rank = mongoose.model<RankSchema>("Rank", RankSchema);

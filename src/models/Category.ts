@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-const CategorySchema = new mongoose.Schema({
+import { CategorySchema } from "../types/category";
+
+const CategorySchema = new mongoose.Schema<CategorySchema>({
   name: {
     type: String,
     required: true,
@@ -18,10 +20,10 @@ const CategorySchema = new mongoose.Schema({
 
   ranks: [
     {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Rank",
     },
   ],
 });
 
-export const Category = mongoose.model("Category", CategorySchema);
+export const Category = mongoose.model<CategorySchema>("Category", CategorySchema);

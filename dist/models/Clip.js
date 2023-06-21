@@ -22,12 +22,12 @@ const ClipSchema = new mongoose_1.default.Schema({
         required: true,
     },
     actualRank: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Rank",
         required: true,
     },
     category: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Category",
         required: true,
     },
@@ -37,7 +37,7 @@ const ClipSchema = new mongoose_1.default.Schema({
         default: "pending",
     },
     createdBy: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },

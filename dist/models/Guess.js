@@ -18,12 +18,12 @@ const Clip_1 = require("./Clip");
 const BadRequestError_1 = require("../errors/BadRequestError");
 const GuessSchema = new mongoose_1.default.Schema({
     clip: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Clip",
         required: true,
     },
     rankGuess: {
-        type: mongoose_1.default.Types.ObjectId,
+        type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Rank",
         required: true,
     },

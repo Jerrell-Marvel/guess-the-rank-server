@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { UserSchema } from "../types/user";
 
 // type User = {
 //   id: string;
@@ -15,7 +16,7 @@ import jwt from "jsonwebtoken";
 //   createJWT: () => string;
 // };
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema<UserSchema>({
   id: {
     type: String,
     required: true,
@@ -50,4 +51,4 @@ const UserSchema = new mongoose.Schema({
 //   });
 // };
 
-export const User = mongoose.model("User", UserSchema);
+export const User = mongoose.model<UserSchema>("User", UserSchema);

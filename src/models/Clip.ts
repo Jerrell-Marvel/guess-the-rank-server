@@ -1,20 +1,21 @@
 import mongoose, { mongo } from "mongoose";
 import { Category } from "./Category";
 import { BadRequestError } from "../errors/BadRequestError";
+import { ClipSchema } from "../types/clip";
 
-const ClipSchema = new mongoose.Schema({
+const ClipSchema = new mongoose.Schema<ClipSchema>({
   link: {
     type: String,
     required: true,
   },
   actualRank: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Rank",
     required: true,
   },
 
   category: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
     required: true,
   },
@@ -26,7 +27,7 @@ const ClipSchema = new mongoose.Schema({
   },
 
   createdBy: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
@@ -49,5 +50,5 @@ ClipSchema.pre("save", async function (next) {
   next();
 });
 
-export const Clip = mongoose.model("Clip", ClipSchema);
+export const Clip = mongoose.model<ClipSchema>("Clip", ClipSchema);
 // const ClipSchema = new mongoose.Schema({});

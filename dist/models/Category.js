@@ -20,7 +20,7 @@ const CategorySchema = new mongoose_1.default.Schema({
     },
     ranks: [
         {
-            type: mongoose_1.default.Types.ObjectId,
+            type: mongoose_1.default.Schema.Types.ObjectId,
             ref: "Rank",
         },
     ],
