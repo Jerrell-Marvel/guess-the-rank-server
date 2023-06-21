@@ -20,7 +20,12 @@ const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.createCategory = createCategory;
 const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categories = yield Category_1.Category.find({});
+    const { ranks } = req.query;
+    const categoriesQuery = Category_1.Category.find({});
+    if (ranks === "true") {
+        categoriesQuery.populate("ranks");
+    }
+    const categories = yield categoriesQuery;
     return res.json(categories);
 });
 exports.getCategories = getCategories;

@@ -21,7 +21,7 @@ const createClip = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     // console.log(req.userInfo);
     const { userId } = req.userInfo;
     const clip = yield Clip_1.Clip.create(Object.assign(Object.assign({}, req.body), { status: "pending", createdBy: userId }));
-    return res.json({ clip });
+    return res.json(clip);
     //   return res.json("sucess");
 });
 exports.createClip = createClip;
@@ -69,6 +69,24 @@ const getClips2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         queryObject.createdBy = userId;
     }
     const clips = yield Clip_1.Clip.find(queryObject);
+    const clipIds = clips.map((clip) => clip._id);
+    console.log(clipIds);
+    // const result = clips.map(async (clip) => {
+    //   const totalGuess = await Guess.countDocuments({ clip: clip._id });
+    //   const totalCorrectGuess = await Guess.countDocuments({ clip: clip._id, rankGuess: clip.actualRank });
+    //   return { ...clip, totalGuess, totalCorrectGuess };
+    // });
+    // console.log(result);
+    // console.log(rankIds);
+    // const guesses = await Guess.aggregate([
+    //   {
+    //     $match: {
+    //       clip: { $in: rankIds },
+    //     },
+    //   },
+    //   { $group: { _id: "$clip", count: { $sum: 1 } } },
+    // ]);
+    // console.log(guesses);
     return res.json(clips);
 });
 exports.getClips2 = getClips2;
@@ -79,7 +97,7 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (role === "user") {
         queryObject.createdBy = userId;
     }
-    const clip = yield Clip_1.Clip.findOne(queryObject);
+    const clip = yield Clip_1.Clip.findOne(queryObject).populate("actualRank");
     if (!clip) {
         throw new BadRequestError_1.BadRequestError("Clip not found");
     }
@@ -114,6 +132,6 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const percentage = (doc.count / totalDocuments) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
-    return res.json({ clip, guesses });
+    return res.json({ clip, guesses, totalDocuments });
 });
 exports.getClipDetail = getClipDetail;

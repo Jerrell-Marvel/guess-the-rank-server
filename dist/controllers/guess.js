@@ -26,10 +26,14 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             path: "ranks",
         },
     });
+    // console.log(clip);
     //   return res.json(clip);
     if (!clip) {
         throw new BadRequestError_1.BadRequestError("Invalid clip id");
     }
+    //@ts-ignore
+    const ranks = clip.category.ranks;
+    // console.log(JSON.stringify(ranks));
     let isCorrect = false;
     //   console.log(clip.actualRank, rankGuess);
     if (String(clip.actualRank) === rankGuess) {
@@ -100,10 +104,12 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const percentage = (doc.count / totalDocuments) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
-    guesses.forEach((res) => {
-        //@ts-ignore
-        const idx = clip.category.ranks;
-    });
+    // const a = ranks.map((rank) => {
+    //   const rankData = guesses.find((e) => e.rank._id == rank._id);
+    //   return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
+    // });
+    // const result = { total: totalDocuments, isCorrect: isCorrect, ranks: a };
+    // console.log(JSON.stringify(result));
     //@ts-ignore
     return res.json({ guesses, isCorrect, totalDocuments });
 });

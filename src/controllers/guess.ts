@@ -14,11 +14,18 @@ export const submitGuess = async (req: Request, res: Response) => {
     },
   });
 
+  // console.log(clip);
+
   //   return res.json(clip);
 
   if (!clip) {
     throw new BadRequestError("Invalid clip id");
   }
+
+  //@ts-ignore
+  const ranks = clip.category.ranks;
+
+  // console.log(JSON.stringify(ranks));
 
   let isCorrect = false;
   //   console.log(clip.actualRank, rankGuess);
@@ -101,10 +108,13 @@ export const submitGuess = async (req: Request, res: Response) => {
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
-  guesses.forEach((res) => {
-    //@ts-ignore
-    const idx = clip.category.ranks;
-  });
+  // const a = ranks.map((rank) => {
+  //   const rankData = guesses.find((e) => e.rank._id == rank._id);
+  //   return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
+  // });
+
+  // const result = { total: totalDocuments, isCorrect: isCorrect, ranks: a };
+  // console.log(JSON.stringify(result));
 
   //@ts-ignore
 

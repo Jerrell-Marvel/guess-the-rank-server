@@ -14,7 +14,14 @@ export const createCategory = async (req: Request, res: Response) => {
 };
 
 export const getCategories = async (req: Request, res: Response) => {
-  const categories = await Category.find({});
+  const { ranks } = req.query;
+  const categoriesQuery = Category.find({});
+
+  if ((ranks as string) === "true") {
+    categoriesQuery.populate("ranks");
+  }
+
+  const categories = await categoriesQuery;
 
   return res.json(categories);
 };

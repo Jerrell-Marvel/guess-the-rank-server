@@ -4,11 +4,12 @@ import { userInfo } from "os";
 import { BadRequestError } from "../errors/BadRequestError";
 import { Guess } from "../models/Guess";
 import mongoose from "mongoose";
+import { Rank } from "../models/Rank";
 export const createClip = async (req: Request<{}, {}>, res: Response) => {
   // console.log(req.userInfo);
   const { userId } = req.userInfo!;
   const clip = await Clip.create({ ...req.body, status: "pending", createdBy: userId });
-  return res.json({ clip });
+  return res.json(clip);
 
   //   return res.json("sucess");
 };
@@ -69,6 +70,31 @@ export const getClips2 = async (req: Request, res: Response) => {
 
   const clips = await Clip.find(queryObject);
 
+  const clipIds = clips.map((clip) => clip._id);
+
+  console.log(clipIds);
+
+  // const result = clips.map(async (clip) => {
+  //   const totalGuess = await Guess.countDocuments({ clip: clip._id });
+  //   const totalCorrectGuess = await Guess.countDocuments({ clip: clip._id, rankGuess: clip.actualRank });
+  //   return { ...clip, totalGuess, totalCorrectGuess };
+  // });
+
+  // console.log(result);
+
+  // console.log(rankIds);
+
+  // const guesses = await Guess.aggregate([
+  //   {
+  //     $match: {
+  //       clip: { $in: rankIds },
+  //     },
+  //   },
+
+  //   { $group: { _id: "$clip", count: { $sum: 1 } } },
+  // ]);
+
+  // console.log(guesses);
   return res.json(clips);
 };
 
@@ -82,7 +108,7 @@ export const getClipDetail = async (req: Request, res: Response) => {
     queryObject.createdBy = userId;
   }
 
-  const clip = await Clip.findOne(queryObject);
+  const clip = await Clip.findOne(queryObject).populate("actualRank");
 
   if (!clip) {
     throw new BadRequestError("Clip not found");
@@ -124,5 +150,5 @@ export const getClipDetail = async (req: Request, res: Response) => {
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
-  return res.json({ clip, guesses });
+  return res.json({ clip, guesses, totalDocuments });
 };
