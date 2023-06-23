@@ -5,16 +5,18 @@ import { User } from "./user";
 
 export type ClipSchema = {
   link: string;
-  actualRank: mongoose.Types.ObjectId | Rank;
-  category: mongoose.Types.ObjectId | Category;
+  actualRank: string | Rank;
+  category: string | Category;
   status: "pending" | "verified";
-  createdBy: mongoose.Types.ObjectId | User;
+  createdBy: string | User;
 };
 
 export type Clip = ClipSchema & {
   _id: mongoose.Types.ObjectId;
 };
 
-export type ClipWithRanks = Omit<Omit<ClipSchema, "category">, "actualRank"> & { actualRank: mongoose.Types.ObjectId; category: CategoryWithRanks };
+export type Clips = Clip[];
+
+export type ClipWithRanks = Omit<Omit<ClipSchema, "category">, "actualRank"> & { actualRank: string; category: CategoryWithRanks };
 
 export type ClipWithActualRank = Omit<ClipSchema, "actualRank"> & { actualRank: Rank };

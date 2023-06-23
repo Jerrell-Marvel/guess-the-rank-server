@@ -5,7 +5,7 @@ import { BadRequestError } from "../errors/BadRequestError";
 import { Guess } from "../models/Guess";
 import mongoose from "mongoose";
 import { Rank } from "../models/Rank";
-import { Clip as ClipType, ClipWithActualRank } from "../types/clip";
+import { Clip as ClipType, ClipWithActualRank, Clips } from "../types/clip";
 import { Guesses, GuessesWithPercentage } from "../types/guess";
 
 export const createClip = async (req: Request, res: Response<ClipType>) => {
@@ -56,7 +56,7 @@ export const getClips = async (req: Request, res: Response) => {
   return res.json(clips);
 };
 
-export const getClips2 = async (req: Request, res: Response<ClipType[]>) => {
+export const getClips2 = async (req: Request, res: Response<Clips>) => {
   // const { categoryId } = req.params;
   const { status = "verified", categoryId } = req.query;
   const { userId, role } = req.userInfo!;

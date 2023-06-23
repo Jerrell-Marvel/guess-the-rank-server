@@ -15,7 +15,7 @@ const createCategory = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { filename } = req.file;
     // const ranks = await Rank.create(...req.body.ranks);
     // const rankIds = ranks.map((rank) => rank._id);
-    const category = yield Category_1.Category.create(Object.assign(Object.assign({}, req.body), { imgUrl: filename }));
+    const category = (yield Category_1.Category.create(Object.assign(Object.assign({}, req.body), { imgUrl: filename })));
     return res.json(category);
 });
 exports.createCategory = createCategory;

@@ -37,7 +37,7 @@ export const submitGuess = async (req: Request, res: Response<{ isCorrect: boole
   // const clip2 = await Clip.aggregate([
   //   {
   //     $match: {
-  //       _id: new mongoose.Types.ObjectId(clipId),
+  //       _id: new string(clipId),
   //     },
   //   },
   //   {
@@ -64,7 +64,7 @@ export const submitGuess = async (req: Request, res: Response<{ isCorrect: boole
   // const test = await Guess.aggregate([
   //   {
   //     $match: {
-  //       clip: new mongoose.Types.ObjectId(clipId),
+  //       clip: new string(clipId),
   //     },
   //   },
   // ]);

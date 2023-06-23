@@ -41,7 +41,7 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // const clip2 = await Clip.aggregate([
     //   {
     //     $match: {
-    //       _id: new mongoose.Types.ObjectId(clipId),
+    //       _id: new string(clipId),
     //     },
     //   },
     //   {
@@ -66,7 +66,7 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     // const test = await Guess.aggregate([
     //   {
     //     $match: {
-    //       clip: new mongoose.Types.ObjectId(clipId),
+    //       clip: new string(clipId),
     //     },
     //   },
     // ]);

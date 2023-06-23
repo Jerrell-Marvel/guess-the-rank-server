@@ -1,7 +1,9 @@
 import mongoose, { mongo } from "mongoose";
-import { Category } from "./Category";
+
 import { BadRequestError } from "../errors/BadRequestError";
 import { ClipSchema } from "../types/clip";
+import { Category as CategoryType } from "../types/category";
+import { Category } from "./Category";
 
 const ClipSchema = new mongoose.Schema<ClipSchema>({
   link: {
@@ -34,7 +36,7 @@ const ClipSchema = new mongoose.Schema<ClipSchema>({
 });
 
 ClipSchema.pre("save", async function (next) {
-  const category = await Category.findOne({ _id: this.category });
+  const category = (await Category.findOne({ _id: this.category })) as CategoryType;
 
   // let isRankValid = false;
 
@@ -42,7 +44,7 @@ ClipSchema.pre("save", async function (next) {
     throw new BadRequestError("invalid category");
   }
 
-  const isRankValid = category.ranks.includes(this.actualRank);
+  const isRankValid = category.ranks;
 
   if (!isRankValid) {
     throw new BadRequestError("invalid rank");

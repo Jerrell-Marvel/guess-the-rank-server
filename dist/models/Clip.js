@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Clip = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const Category_1 = require("./Category");
 const BadRequestError_1 = require("../errors/BadRequestError");
+const Category_1 = require("./Category");
 const ClipSchema = new mongoose_1.default.Schema({
     link: {
         type: String,
@@ -44,12 +44,12 @@ const ClipSchema = new mongoose_1.default.Schema({
 });
 ClipSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const category = yield Category_1.Category.findOne({ _id: this.category });
+        const category = (yield Category_1.Category.findOne({ _id: this.category }));
         // let isRankValid = false;
         if (!category) {
             throw new BadRequestError_1.BadRequestError("invalid category");
         }
-        const isRankValid = category.ranks.includes(this.actualRank);
+        const isRankValid = category.ranks;
         if (!isRankValid) {
             throw new BadRequestError_1.BadRequestError("invalid rank");
         }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Category } from "../models/Category";
 import { Rank } from "../models/Rank";
-import { Category as CategoryType, CategoryWithRanks } from "../types/category";
+import { Categories, CategoriesWithRanks, Category as CategoryType, CategoryWithRanks } from "../types/category";
 
 export const createCategory = async (req: Request, res: Response<CategoryType>) => {
   const { filename } = req.file!;
@@ -9,12 +9,12 @@ export const createCategory = async (req: Request, res: Response<CategoryType>) 
 
   // const rankIds = ranks.map((rank) => rank._id);
 
-  const category = await Category.create({ ...req.body, imgUrl: filename });
+  const category = (await Category.create({ ...req.body, imgUrl: filename })) as CategoryType;
 
   return res.json(category);
 };
 
-export const getCategories = async (req: Request, res: Response<CategoryType[] | CategoryWithRanks[]>) => {
+export const getCategories = async (req: Request, res: Response<Categories | CategoriesWithRanks>) => {
   const { ranks } = req.query;
   const categoriesQuery = Category.find({});
 
@@ -22,7 +22,7 @@ export const getCategories = async (req: Request, res: Response<CategoryType[] |
     categoriesQuery.populate("ranks");
   }
 
-  const categories = (await categoriesQuery) as CategoryType[] | CategoryWithRanks[];
+  const categories = (await categoriesQuery) as Categories | CategoriesWithRanks;
 
   return res.json(categories);
 };
