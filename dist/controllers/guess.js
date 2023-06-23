@@ -20,20 +20,18 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { clipId } = req.params;
     const { rankGuess } = req.body;
-    const clip = yield Clip_1.Clip.findOne({ _id: clipId }).populate({
+    if (!rankGuess) {
+        throw new BadRequestError_1.BadRequestError("rank id isn't included");
+    }
+    const clip = (yield Clip_1.Clip.findOne({ _id: clipId }).populate({
         path: "category",
         populate: {
             path: "ranks",
         },
-    });
-    // console.log(clip);
-    //   return res.json(clip);
+    }));
     if (!clip) {
         throw new BadRequestError_1.BadRequestError("Invalid clip id");
     }
-    //@ts-ignore
-    const ranks = clip.category.ranks;
-    // console.log(JSON.stringify(ranks));
     let isCorrect = false;
     //   console.log(clip.actualRank, rankGuess);
     if (String(clip.actualRank) === rankGuess) {
@@ -73,7 +71,7 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     //   },
     // ]);
     // console.log(test);
-    const documentCounts = yield Guess_1.Guess.aggregate([
+    const guesses = (yield Guess_1.Guess.aggregate([
         {
             $match: {
                 clip: new mongoose_1.default.Types.ObjectId(clipId),
@@ -98,19 +96,19 @@ const submitGuess = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 _id: 0,
             },
         },
-    ]);
-    const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
-    const guesses = documentCounts.map((doc) => {
-        const percentage = (doc.count / totalDocuments) * 100;
+    ]));
+    // console.log(documentCounts);
+    const totalGuesses = yield Guess_1.Guess.countDocuments({ clip: clipId });
+    const guessesWithPercentage = guesses.map((doc) => {
+        const percentage = (doc.count / totalGuesses) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
     // const a = ranks.map((rank) => {
     //   const rankData = guesses.find((e) => e.rank._id == rank._id);
     //   return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
     // });
-    // const result = { total: totalDocuments, isCorrect: isCorrect, ranks: a };
+    // const result = { total: totalGuesses, isCorrect: isCorrect, ranks: a };
     // console.log(JSON.stringify(result));
-    //@ts-ignore
-    return res.json({ guesses, isCorrect, totalDocuments });
+    return res.json({ guesses: guessesWithPercentage, isCorrect, totalGuesses });
 });
 exports.submitGuess = submitGuess;

@@ -4,28 +4,27 @@ import { Clip } from "../models/Clip";
 import { BadRequestError } from "../errors/BadRequestError";
 import { Category } from "../models/Category";
 import mongoose from "mongoose";
-export const submitGuess = async (req: Request, res: Response) => {
+import { ClipWithRanks } from "../types/clip";
+import { GuessWithPercentage, Guesses, GuessesWithPercentage } from "../types/guess";
+
+export const submitGuess = async (req: Request, res: Response<{ isCorrect: boolean; guesses: GuessesWithPercentage; totalGuesses: number }>) => {
   const { clipId } = req.params;
-  const { rankGuess } = req.body as { rankGuess: string };
-  const clip = await Clip.findOne({ _id: clipId }).populate({
+  const { rankGuess } = req.body as { rankGuess: string | undefined };
+
+  if (!rankGuess) {
+    throw new BadRequestError("rank id isn't included");
+  }
+
+  const clip = (await Clip.findOne({ _id: clipId }).populate({
     path: "category",
     populate: {
       path: "ranks",
     },
-  });
-
-  // console.log(clip);
-
-  //   return res.json(clip);
+  })) as ClipWithRanks | null;
 
   if (!clip) {
     throw new BadRequestError("Invalid clip id");
   }
-
-  //@ts-ignore
-  const ranks = clip.category.ranks;
-
-  // console.log(JSON.stringify(ranks));
 
   let isCorrect = false;
   //   console.log(clip.actualRank, rankGuess);
@@ -72,7 +71,7 @@ export const submitGuess = async (req: Request, res: Response) => {
 
   // console.log(test);
 
-  const documentCounts = await Guess.aggregate([
+  const guesses = (await Guess.aggregate([
     {
       $match: {
         clip: new mongoose.Types.ObjectId(clipId),
@@ -99,12 +98,14 @@ export const submitGuess = async (req: Request, res: Response) => {
         _id: 0,
       },
     },
-  ]);
+  ])) as Guesses;
 
-  const totalDocuments = await Guess.countDocuments({ clip: clipId });
+  // console.log(documentCounts);
 
-  const guesses = documentCounts.map((doc) => {
-    const percentage = (doc.count / totalDocuments) * 100;
+  const totalGuesses = await Guess.countDocuments({ clip: clipId });
+
+  const guessesWithPercentage = guesses.map((doc) => {
+    const percentage = (doc.count / totalGuesses) * 100;
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
@@ -113,10 +114,8 @@ export const submitGuess = async (req: Request, res: Response) => {
   //   return { ...rank, count: rankData?.count || 0, percentage: rankData?.percentage || "0" };
   // });
 
-  // const result = { total: totalDocuments, isCorrect: isCorrect, ranks: a };
+  // const result = { total: totalGuesses, isCorrect: isCorrect, ranks: a };
   // console.log(JSON.stringify(result));
 
-  //@ts-ignore
-
-  return res.json({ guesses, isCorrect, totalDocuments });
+  return res.json({ guesses: guessesWithPercentage, isCorrect, totalGuesses });
 };

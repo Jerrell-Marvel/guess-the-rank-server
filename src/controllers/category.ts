@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Category } from "../models/Category";
 import { Rank } from "../models/Rank";
-import { Category as CategoryType } from "../types/category";
+import { Category as CategoryType, CategoryWithRanks } from "../types/category";
 
 export const createCategory = async (req: Request, res: Response<CategoryType>) => {
   const { filename } = req.file!;
@@ -14,7 +14,7 @@ export const createCategory = async (req: Request, res: Response<CategoryType>) 
   return res.json(category);
 };
 
-export const getCategories = async (req: Request, res: Response<CategoryType[]>) => {
+export const getCategories = async (req: Request, res: Response<CategoryType[] | CategoryWithRanks[]>) => {
   const { ranks } = req.query;
   const categoriesQuery = Category.find({});
 
@@ -22,15 +22,15 @@ export const getCategories = async (req: Request, res: Response<CategoryType[]>)
     categoriesQuery.populate("ranks");
   }
 
-  const categories = await categoriesQuery;
+  const categories = (await categoriesQuery) as CategoryType[] | CategoryWithRanks[];
 
   return res.json(categories);
 };
 
-export const getCategory = async (req: Request, res: Response) => {
+export const getCategory = async (req: Request, res: Response<CategoryWithRanks | null>) => {
   const { name } = req.params;
 
-  const category = await Category.findOne({ name }).populate("ranks");
+  const category = (await Category.findOne({ name }).populate("ranks")) as CategoryWithRanks | null;
 
   return res.json(category);
 };

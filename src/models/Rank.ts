@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { RankSchema } from "../types/rank";
 
 const RankSchema = new mongoose.Schema<RankSchema>({
   name: {

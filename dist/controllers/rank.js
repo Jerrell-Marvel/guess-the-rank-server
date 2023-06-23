@@ -25,6 +25,6 @@ const createRank = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     if (!category) {
         throw new BadRequestError_1.BadRequestError("Invalid category id");
     }
-    return res.json({ category });
+    return res.json(rank);
 });
 exports.createRank = createRank;

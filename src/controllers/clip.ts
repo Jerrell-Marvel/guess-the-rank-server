@@ -5,7 +5,10 @@ import { BadRequestError } from "../errors/BadRequestError";
 import { Guess } from "../models/Guess";
 import mongoose from "mongoose";
 import { Rank } from "../models/Rank";
-export const createClip = async (req: Request<{}, {}>, res: Response) => {
+import { Clip as ClipType, ClipWithActualRank } from "../types/clip";
+import { Guesses, GuessesWithPercentage } from "../types/guess";
+
+export const createClip = async (req: Request, res: Response<ClipType>) => {
   // console.log(req.userInfo);
   const { userId } = req.userInfo!;
   const clip = await Clip.create({ ...req.body, status: "pending", createdBy: userId });
@@ -14,7 +17,7 @@ export const createClip = async (req: Request<{}, {}>, res: Response) => {
   //   return res.json("sucess");
 };
 
-export const getClip = async (req: Request, res: Response) => {
+export const getClip = async (req: Request, res: Response<ClipType | null>) => {
   const { categoryId } = req.params;
   const documentCount = await Clip.countDocuments({ status: "verified", category: categoryId });
 
@@ -25,13 +28,13 @@ export const getClip = async (req: Request, res: Response) => {
   return res.json(clip);
 };
 
-export const verifyClip = async (req: Request, res: Response) => {
+export const verifyClip = async (req: Request, res: Response<ClipType | null>) => {
   const { clipId } = req.params;
   const verifiedClip = await Clip.findOneAndUpdate({ _id: clipId }, { status: "verified" }, { new: true });
   return res.json(verifiedClip);
 };
 
-export const deleteClip = async (req: Request, res: Response) => {
+export const deleteClip = async (req: Request, res: Response<ClipType | null>) => {
   const { clipId } = req.params;
   const deletedClip = await Clip.findOneAndDelete({ _id: clipId });
   return res.json(deletedClip);
@@ -53,7 +56,7 @@ export const getClips = async (req: Request, res: Response) => {
   return res.json(clips);
 };
 
-export const getClips2 = async (req: Request, res: Response) => {
+export const getClips2 = async (req: Request, res: Response<ClipType[]>) => {
   // const { categoryId } = req.params;
   const { status = "verified", categoryId } = req.query;
   const { userId, role } = req.userInfo!;
@@ -70,9 +73,9 @@ export const getClips2 = async (req: Request, res: Response) => {
 
   const clips = await Clip.find(queryObject);
 
-  const clipIds = clips.map((clip) => clip._id);
+  // const clipIds = clips.map((clip) => clip._id);
 
-  console.log(clipIds);
+  // console.log(clipIds);
 
   // const result = clips.map(async (clip) => {
   //   const totalGuess = await Guess.countDocuments({ clip: clip._id });
@@ -98,7 +101,7 @@ export const getClips2 = async (req: Request, res: Response) => {
   return res.json(clips);
 };
 
-export const getClipDetail = async (req: Request, res: Response) => {
+export const getClipDetail = async (req: Request, res: Response<{ clip: ClipWithActualRank; guesses: GuessesWithPercentage; totalGuesses: number }>) => {
   const { userId, role } = req.userInfo!;
   const { clipId } = req.params;
 
@@ -108,13 +111,13 @@ export const getClipDetail = async (req: Request, res: Response) => {
     queryObject.createdBy = userId;
   }
 
-  const clip = await Clip.findOne(queryObject).populate("actualRank");
+  const clip = (await Clip.findOne(queryObject).populate("actualRank")) as ClipWithActualRank | null;
 
   if (!clip) {
     throw new BadRequestError("Clip not found");
   }
 
-  const documentCounts = await Guess.aggregate([
+  const guesses = (await Guess.aggregate([
     {
       $match: {
         clip: new mongoose.Types.ObjectId(clipId),
@@ -141,14 +144,14 @@ export const getClipDetail = async (req: Request, res: Response) => {
         _id: 0,
       },
     },
-  ]);
+  ])) as Guesses;
 
-  const totalDocuments = await Guess.countDocuments({ clip: clipId });
+  const totalGuesses = await Guess.countDocuments({ clip: clipId });
 
-  const guesses = documentCounts.map((doc) => {
-    const percentage = (doc.count / totalDocuments) * 100;
+  const guessesWithPercentage = guesses.map((doc) => {
+    const percentage = (doc.count / totalGuesses) * 100;
     return { ...doc, percentage: percentage.toFixed(2) };
   });
 
-  return res.json({ clip, guesses, totalDocuments });
+  return res.json({ clip, guesses: guessesWithPercentage, totalGuesses });
 };

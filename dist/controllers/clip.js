@@ -69,8 +69,8 @@ const getClips2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         queryObject.createdBy = userId;
     }
     const clips = yield Clip_1.Clip.find(queryObject);
-    const clipIds = clips.map((clip) => clip._id);
-    console.log(clipIds);
+    // const clipIds = clips.map((clip) => clip._id);
+    // console.log(clipIds);
     // const result = clips.map(async (clip) => {
     //   const totalGuess = await Guess.countDocuments({ clip: clip._id });
     //   const totalCorrectGuess = await Guess.countDocuments({ clip: clip._id, rankGuess: clip.actualRank });
@@ -97,11 +97,11 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (role === "user") {
         queryObject.createdBy = userId;
     }
-    const clip = yield Clip_1.Clip.findOne(queryObject).populate("actualRank");
+    const clip = (yield Clip_1.Clip.findOne(queryObject).populate("actualRank"));
     if (!clip) {
         throw new BadRequestError_1.BadRequestError("Clip not found");
     }
-    const documentCounts = yield Guess_1.Guess.aggregate([
+    const guesses = (yield Guess_1.Guess.aggregate([
         {
             $match: {
                 clip: new mongoose_1.default.Types.ObjectId(clipId),
@@ -126,12 +126,12 @@ const getClipDetail = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 _id: 0,
             },
         },
-    ]);
-    const totalDocuments = yield Guess_1.Guess.countDocuments({ clip: clipId });
-    const guesses = documentCounts.map((doc) => {
-        const percentage = (doc.count / totalDocuments) * 100;
+    ]));
+    const totalGuesses = yield Guess_1.Guess.countDocuments({ clip: clipId });
+    const guessesWithPercentage = guesses.map((doc) => {
+        const percentage = (doc.count / totalGuesses) * 100;
         return Object.assign(Object.assign({}, doc), { percentage: percentage.toFixed(2) });
     });
-    return res.json({ clip, guesses, totalDocuments });
+    return res.json({ clip, guesses: guessesWithPercentage, totalGuesses });
 });
 exports.getClipDetail = getClipDetail;

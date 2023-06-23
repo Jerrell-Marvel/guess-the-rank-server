@@ -25,13 +25,13 @@ const getCategories = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (ranks === "true") {
         categoriesQuery.populate("ranks");
     }
-    const categories = yield categoriesQuery;
+    const categories = (yield categoriesQuery);
     return res.json(categories);
 });
 exports.getCategories = getCategories;
 const getCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.params;
-    const category = yield Category_1.Category.findOne({ name }).populate("ranks");
+    const category = (yield Category_1.Category.findOne({ name }).populate("ranks"));
     return res.json(category);
 });
 exports.getCategory = getCategory;
